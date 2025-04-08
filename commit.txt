@@ -1,0 +1,46 @@
+# SQL Server Practice Problems
+
+Welcome to my personal learning project focused on SQL Server.
+
+This repository is dedicated to collecting real-world SQL Server problems and solving them using optimized queries and best practices.  
+Each problem is based on real scenarios I encounter during my studies or while exploring common challenges developers and DBAs face.
+
+## 📘 Purpose
+
+This is a self-learning project. I search for SQL-related problems, analyze them, and document solutions to improve my skills in:
+
+- Writing efficient SQL queries
+- Understanding SQL Server internals
+- Optimizing performance
+- Practicing database design and troubleshooting
+
+## 🧠 Topics Covered
+
+- Joins and subqueries
+- Aggregation and grouping
+- Index optimization
+- Query performance tuning
+- Stored procedures and functions
+- Data integrity and constraints
+
+## 📁 Structure
+
+Each folder or file in this repo includes:
+
+- A **problem statement**
+- One or more **solution attempts**
+- Additional **notes** or **references** if needed
+
+## ✅ Example Format
+
+```sql
+-- Problem: Retrieve all customers who haven't placed an order in the last 6 months
+
+-- Solution:
+SELECT c.CustomerName
+FROM Customers c
+LEFT JOIN Orders o ON c.CustomerID = o.CustomerID
+    AND o.OrderDate >= DATEADD(MONTH, -6, GETDATE())
+WHERE o.OrderID IS NULL;
+
+-- Notes: Using LEFT JOIN and filtering inside the ON clause ensures accuracy.
