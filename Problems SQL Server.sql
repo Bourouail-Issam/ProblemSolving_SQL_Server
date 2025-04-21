@@ -310,3 +310,123 @@ CASE
 	Else 'Unknown'
 End as DootDescription
 from VehicleDetails
+
+-- Problem 31: Get all Vehicle_Display_Name, year and add extra column to calculate the age of the car then sort the results by age desc.
+
+select Vehicle_Display_Name, Year , Age = YEAR(getdate()) - VehicleDetails.Year
+from VehicleDetails
+order by age desc
+
+-- Problem 32: Get all Vehicle_Display_Name, year, Age for vehicles that their age between 15 and 25 years old
+
+select Vehicle_Display_Name, Year , Age = YEAR(getdate()) - VehicleDetails.Year
+from VehicleDetails
+where YEAR(getdate()) - VehicleDetails.Year between 15 and 25
+
+-- Other solution
+
+select * from(
+select Vehicle_Display_Name, Year , Age = YEAR(getdate()) - VehicleDetails.Year
+from VehicleDetails) R1
+where Age between 15 and 25
+
+-- Problem 33: Get Minimum Engine CC , Maximum Engine CC , and Average Engine CC of all Vehicles
+
+select Min(Engine_CC) as MinimimEngineCC , max(Engine_CC) as MaximumEngineCC, avg(Engine_CC) as AverageEngineCC
+from VehicleDetails;
+
+-- Problem 34: Get all vehicles that have the minimum Engine_CC
+
+select * from VehicleDetails
+where Engine_CC = (select Min(Engine_CC) from VehicleDetails)
+
+-- Problem 35: Get all vehicles that have the Maximum Engine_CC
+
+select * from VehicleDetails
+where Engine_CC = (select MAX(Engine_CC) from VehicleDetails)
+
+-- Problem 36: Get all vehicles that have Engin_CC below average
+
+select * from VehicleDetails
+where Engine_CC < (select AVG(Engine_CC) from VehicleDetails)
+
+-- Problem 37: Get total vehicles that have Engin_CC above average
+
+select count(*) as NumberOfVehiclesAboveAverageEngineCC   from (
+select * from VehicleDetails
+where Engine_CC > (select AVG(Engine_CC) from VehicleDetails)
+) R1 
+
+-- Problem 38: Get all unique Engin_CC and sort them Desc
+
+select distinct Engine_CC from VehicleDetails
+order by Engine_CC desc
+
+-- Problem 39: Get the maximum 3 Engine CC
+
+select distinct top 3  Engine_CC from VehicleDetails
+order by Engine_CC desc
+
+-- Problem 40: Get all vehicles that has one of the Max 3 Engine CC
+
+select Vehicle_Display_Name from VehicleDetails 
+where Engine_CC in 
+(
+       select distinct top 3  Engine_CC from VehicleDetails
+       order by Engine_CC desc
+)
+
+-- Problem 41: Get all Makes that manufactures one of the Max 3 Engine CC
+
+select distinct  Makes.Make 
+
+from VehicleDetails
+         inner join Makes on VehicleDetails.MakeID = Makes.MakeID
+
+where Engine_CC in 
+(
+       select distinct top 3  Engine_CC from VehicleDetails
+       order by Engine_CC desc
+)
+order by Make
+
+-- Problem 42: Get a table of unique Engine_CC and calculate tax per Engine CC as follows:
+	-- 0 to 1000    Tax = 100
+	-- 1001 to 2000 Tax = 200
+	-- 2001 to 4000 Tax = 300
+	-- 4001 to 6000 Tax = 400
+	-- 6001 to 8000 Tax = 500
+	-- Above 8000   Tax = 600
+	-- Otherwise    Tax = 0
+
+select Engine_CC ,  
+  Case
+      when Engine_CC between 0 and 1000 then 100
+      when Engine_CC between 1001  and 2000 then 200
+      when Engine_CC between 2001 and 4000 then 300
+      when Engine_CC between 4001 and 6000 then 400
+      when Engine_CC between 6001 and 8000 then 500
+	  else 0
+	END as Tax
+from (
+     select distinct Engine_CC from VehicleDetails
+) R1
+order by Engine_CC
+
+-- Problem 43: Get Make and Total Number Of Doors Manufactured Per Make
+
+select Makes.Make,  Sum(VehicleDetails.NumDoors) AS TotalNumberOfDoors
+from VehicleDetails 
+        inner join Makes on Makes.MakeID = VehicleDetails.MakeID
+
+group by Makes.Make
+Order By TotalNumberOfDoors desc
+
+-- Problem 44: Get Total Number Of Doors Manufactured by 'Ford'
+
+select Makes.Make,  Sum(VehicleDetails.NumDoors) AS TotalNumberOfDoors
+from VehicleDetails 
+        inner join Makes on Makes.MakeID = VehicleDetails.MakeID
+
+group by Makes.Make
+having Make = 'Ford'
